@@ -12,12 +12,12 @@ namespace WinTail
         public const string ExitCommand = "exit";
         public const string StartCommand = "start";
 
-        private IActorRef _validationActor;
-
-        public ConsoleReaderActor(IActorRef validationActor)
-        {
-            _validationActor = validationActor;
-        }
+        // removed for this exercise
+        //private IActorRef _validationActor;
+        //public ConsoleReaderActor(IActorRef validationActor)
+        //{
+        //    _validationActor = validationActor;
+        //}
 
         protected override void OnReceive(object message)
         {
@@ -48,7 +48,8 @@ namespace WinTail
             }
 
             // send message for validation and processing
-            _validationActor.Tell(message);
+            //_validationActor.Tell(message);
+            Context.ActorSelection("akka://MyActorSystem/user/validationActor").Tell(message);
         }
     }
 }

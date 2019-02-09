@@ -9,12 +9,12 @@ namespace WinTail
     public class FileValidatorActor : UntypedActor
     {
         private readonly IActorRef _consoleWriterActor;
-        private readonly IActorRef _tailCoordinatorActor;
+        //private readonly IActorRef _tailCoordinatorActor;
 
-        public FileValidatorActor(IActorRef consoleWriter, IActorRef tailCoordinatorActor)
+        public FileValidatorActor(IActorRef consoleWriter)
         {
             _consoleWriterActor = consoleWriter;
-            _tailCoordinatorActor = tailCoordinatorActor;
+            //_tailCoordinatorActor = tailCoordinatorActor;
         }
 
         protected override void OnReceive(object message)
@@ -36,7 +36,9 @@ namespace WinTail
                 {
                     // feedback to console, and tell coordinator to watch the file
                     _consoleWriterActor.Tell(new Messages.InputSuccess($"Starting processing for {msg}"));
-                    _tailCoordinatorActor.Tell(new TailCoordinatorActor.StartTail(msg, _consoleWriterActor));
+                    //_tailCoordinatorActor.Tell(new TailCoordinatorActor.StartTail(msg, _consoleWriterActor));
+                    Context.ActorSelection("akka://MyActorSystem/user/tailCoordinatorActor")
+                        .Tell(new TailCoordinatorActor.StartTail(msg, _consoleWriterActor));
                 }
                 else
                 {
