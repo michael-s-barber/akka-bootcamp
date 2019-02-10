@@ -8,7 +8,7 @@ using Akka.Actor;
 
 namespace ChartApp.Actors
 {
-    public class ChartingActor : ReceiveActor
+    public class ChartingActor : ReceiveActor, IWithUnboundedStash
     {
         #region Messages
 
@@ -56,6 +56,10 @@ namespace ChartApp.Actors
         private readonly Button _pauseButton;
         private Dictionary<string, Series> _seriesIndex;
 
+        // stash interface, set by the Akka construct pipeline for us because we're implementing
+        // the interface.
+        public IStash Stash { get; set; }
+
         public ChartingActor(Chart chart, Button pauseButton) : this(chart, pauseButton, new Dictionary<string, Series>())
         {
         }
@@ -87,15 +91,30 @@ namespace ChartApp.Actors
 
         private void Paused()
         {
-            Receive<Metric>(metric => HandleMetricsPaused(metric));
+            Receive<AddSeries>(ser => Stash.Stash());
+            Receive<RemoveSeries>(ser => Stash.Stash());
+            //Receive<Metric>(metric => HandleMetricsPaused(metric));
+            Receive<Metric>(metric => Stash.Stash());
             Receive<TogglePause>(pause =>
             {
                 _pauseButton.BackColor = Color.LightGreen;
                 UnbecomeStacked();
+
+                // unstash all messages -- put them back into the mailbox 
+                // at the front of the queue
+                Stash.UnstashAll();
             });
         }
 
-        
+        protected override void PreRestart(Exception reason, object message)
+        {
+            /// However, you can preserve the contents of your Stash during restarts by calling Stash.UnstashAll() 
+            /// inside your actor's PreRestart lifecycle method. This will move all the stashed messages into the 
+            /// actor mailbox, which persists through the restart:
+            Stash.UnstashAll();
+        }
+
+
 
         #region Individual Message Type Handlers
 
