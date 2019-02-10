@@ -7,6 +7,9 @@
 *.sln.docstates
 *.userprefs
 
+# VS
+.vs
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
