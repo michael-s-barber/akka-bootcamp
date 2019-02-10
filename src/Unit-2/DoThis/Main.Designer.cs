@@ -28,30 +28,31 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend5 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.sysChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.buttonCPU = new System.Windows.Forms.Button();
             this.buttonMemory = new System.Windows.Forms.Button();
             this.buttonDisk = new System.Windows.Forms.Button();
+            this.buttonPause = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.sysChart)).BeginInit();
             this.SuspendLayout();
             // 
             // sysChart
             // 
-            chartArea5.Name = "ChartArea1";
-            this.sysChart.ChartAreas.Add(chartArea5);
+            chartArea1.Name = "ChartArea1";
+            this.sysChart.ChartAreas.Add(chartArea1);
             this.sysChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            legend5.Name = "Legend1";
-            this.sysChart.Legends.Add(legend5);
+            legend1.Name = "Legend1";
+            this.sysChart.Legends.Add(legend1);
             this.sysChart.Location = new System.Drawing.Point(0, 0);
             this.sysChart.Margin = new System.Windows.Forms.Padding(4);
             this.sysChart.Name = "sysChart";
-            series5.ChartArea = "ChartArea1";
-            series5.Legend = "Legend1";
-            series5.Name = "Series1";
-            this.sysChart.Series.Add(series5);
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.sysChart.Series.Add(series1);
             this.sysChart.Size = new System.Drawing.Size(912, 549);
             this.sysChart.TabIndex = 0;
             this.sysChart.Text = "sysChart";
@@ -89,11 +90,23 @@
             this.buttonDisk.UseVisualStyleBackColor = true;
             this.buttonDisk.Click += new System.EventHandler(this.ButtonDisk_Click);
             // 
+            // buttonPause
+            // 
+            this.buttonPause.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonPause.Location = new System.Drawing.Point(825, 410);
+            this.buttonPause.Name = "buttonPause";
+            this.buttonPause.Size = new System.Drawing.Size(75, 23);
+            this.buttonPause.TabIndex = 4;
+            this.buttonPause.Text = "Pause";
+            this.buttonPause.UseVisualStyleBackColor = true;
+            this.buttonPause.Click += new System.EventHandler(this.ButtonPause_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(912, 549);
+            this.Controls.Add(this.buttonPause);
             this.Controls.Add(this.buttonDisk);
             this.Controls.Add(this.buttonMemory);
             this.Controls.Add(this.buttonCPU);
@@ -114,6 +127,7 @@
         private System.Windows.Forms.Button buttonCPU;
         private System.Windows.Forms.Button buttonMemory;
         private System.Windows.Forms.Button buttonDisk;
+        private System.Windows.Forms.Button buttonPause;
     }
 }
 

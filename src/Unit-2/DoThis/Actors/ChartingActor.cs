@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using Akka.Actor;
 
@@ -40,6 +42,8 @@ namespace ChartApp.Actors
             }
         }
 
+        public class TogglePause { }
+
         #endregion
 
         // max points in series
@@ -49,22 +53,46 @@ namespace ChartApp.Actors
         private int xPosCounter = 0;
 
         private readonly Chart _chart;
+        private readonly Button _pauseButton;
         private Dictionary<string, Series> _seriesIndex;
 
-        public ChartingActor(Chart chart) : this(chart, new Dictionary<string, Series>())
+        public ChartingActor(Chart chart, Button pauseButton) : this(chart, pauseButton, new Dictionary<string, Series>())
         {
         }
 
-        public ChartingActor(Chart chart, Dictionary<string, Series> seriesIndex)
+        public ChartingActor(Chart chart, Button pauseButton, Dictionary<string, Series> seriesIndex)
         {
             _chart = chart;
+            _pauseButton = pauseButton;
             _seriesIndex = seriesIndex;
 
+            // start in Charting mode
+            Charting();
+        }
+
+        private void Charting()
+        {
             // add receive handlers
             Receive<InitializeChart>(ic => HandleInitialize(ic));
             Receive<Metric>(met => HandleMetrics(met));
             Receive<AddSeries>(ser => HandleAddSeries(ser));
             Receive<RemoveSeries>(ser => HandleRemoveSeries(ser));
+
+            Receive<TogglePause>(pause =>
+            {
+                _pauseButton.BackColor = Color.LightGoldenrodYellow;
+                BecomeStacked(Paused);
+            });
+        }
+
+        private void Paused()
+        {
+            Receive<Metric>(metric => HandleMetricsPaused(metric));
+            Receive<TogglePause>(pause =>
+            {
+                _pauseButton.BackColor = Color.LightGreen;
+                UnbecomeStacked();
+            });
         }
 
         
@@ -136,6 +164,19 @@ namespace ChartApp.Actors
                     points.AddXY(xPosCounter++, metric.CounterValue);
                     while (points.Count > MaxPoints) points.RemoveAt(0);
                 }
+                SetChartBoundaries();
+            }
+        }
+
+        private void HandleMetricsPaused(Metric metric)
+        {
+            if (!string.IsNullOrEmpty(metric.Series)
+                && _seriesIndex.ContainsKey(metric.Series))
+            {
+                var series = _seriesIndex[metric.Series];
+                // set the Y value to zero when we're paused
+                series.Points.AddXY(xPosCounter++, 0.0d);
+                while (series.Points.Count > MaxPoints) series.Points.RemoveAt(0);
                 SetChartBoundaries();
             }
         }
