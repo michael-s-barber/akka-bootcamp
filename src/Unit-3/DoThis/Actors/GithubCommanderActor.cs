@@ -69,7 +69,12 @@ namespace GithubActors.Actors
         private void BecomeAsking()
         {
             _canAcceptJobSender = Sender;
-            pendingJobReplies = 3; //the number of routees
+
+            // Block, but ask the router for the number of routees. 
+            // (that bit comes from configuration, so this makes more sense)
+            // We can't really proceed otherwise, so we do this synchronously.
+            pendingJobReplies = _coordinator.Ask<Routees>(new GetRoutees()).Result.Members.Count();
+            
             Become(Asking);
         }
 
@@ -113,17 +118,9 @@ namespace GithubActors.Actors
 
         protected override void PreStart()
         {
-            var instanceNumbers = Enumerable.Range(1, 3).ToArray();
-
-            var coordinatorActors = instanceNumbers
-                .Select(i => Context.ActorOf(Props.Create(() => new GithubCoordinatorActor()), 
-                    $"{ActorPaths.GithubCoordinatorActor.Name}{i}"))
-                .ToArray();
-
-            var paths = instanceNumbers.Select(i => $"{ActorPaths.GithubCoordinatorActor.Path}{i}").ToArray();
-            _coordinator = Context.ActorOf(Props.Empty.WithRouter(
-                new BroadcastGroup(paths)));
-
+            _coordinator = Context.ActorOf(Props.Create(() => new GithubCoordinatorActor()).WithRouter(FromConfig.Instance),
+                ActorPaths.GithubCoordinatorActor.Name);
+            
             base.PreStart();
         }
     }
